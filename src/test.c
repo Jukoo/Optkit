@@ -1,0 +1,22 @@
+//SPDX-License-Identifier: GPL-3.0 
+
+#include <stdio.h> 
+#include "optkit.h" 
+
+extern char * optkit_pbn ;
+optkit_begin(options)
+  noarg("help" ,  "show this help" ) ,  
+  rearg("output" ,"redirect output") ,
+  oparg("input" , "redirect input")  ,
+optkit_end
+
+int main(int ac , char * const *av) 
+{
+
+  optkit_parse(options , av) ;  
+  char * basename = optkit_get_basename(av) ;
+
+  printf(" %s \012" , basename)  ; 
+
+  return 0 ; 
+}
