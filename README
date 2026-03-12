@@ -1,0 +1,96 @@
+
+░█▀█░█▀█░▀█▀░█░█░▀█▀░▀█▀
+░█░█░█▀▀░░█░░█▀▄░░█░░░█░
+░▀▀▀░▀░░░░▀░░▀░▀░▀▀▀░░▀░|  Define flags like you mean it.
+
+------
+A tiny declarative layer on top of getopt for clean and self-documented CLI parsing in C.
+With optkit, you define arguments in a readable, structured way no scattered help strings, no giant switch blocks.
+
+✨ The Idea
+------------
+Instead of Defining flags in one place
+
+Writing help somewhere else
+Manually formatting usage
+Handling everything in a big switch
+
+You write:
+
+  optkit_begin(options)
+      noarg("help",   "show this help"),
+      rearg("output", "redirect output"),
+      oparg("input",  "redirect input"),
+  optkit_end;
+
+Readable. Declarative. Self-documented.
+
+Argument Types
+--------------
+Macro	Meaning
+noarg	Flag without argument (--help)
+rearg	Required argument (--output file.txt)
+oparg	Optional argument
+
+Example:
+--------
+
+  #include "optkit.h"
+
+  int main(int argc, char **argv)
+  {
+    optkit_begin(options)
+        noarg("help",   "show this help"),
+        rearg("output", "redirect output"),
+        oparg("input",  "redirect input"),
+    optkit_end;
+
+    optkit_parse(argc, argv, options);
+
+    return 0;
+    }
+
+Then:
+
+$ ./app --help
+
+Automatically generates:
+Usage: app [options]
+
+Options:
+  --help              show this help
+  --output <arg>      redirect output
+  --input [arg]       redirect input
+
+Why This Design?
+-------------------
+Keeps CLI definitions together.
+- Makes code self-documenting 
+- Avoids duplication
+- Improves readability
+- Cleaner than raw getopt
+- Minimal abstraction overhead
+
+It feels like a tiny embedded DSL — but remains pure C.
+
+Philosophy behind
+-----------------
+optkit is:
+
+Small - Explicit - Predictable -Close to the metal - Built for system programmers
+
+* No runtime reflection.
+* No hidden magic.
+
+>> Just structured CLI parsing.<< 
+
+Possible Extensions
+----------------------
+
+Short flag alias support (-h for --help)
+
+Default values
+Validation callbacks
+Subcommands
+Auto-manpage generation
+Compile-time option validation

@@ -1,3 +1,0 @@
-# libarghlp
-extend getopt for a more readable use of arguments with an integrated description field for improved code readability,
-Define your helper at the same time as you define your flags
