@@ -1,4 +1,5 @@
 //SPDX-License-Identifier: GPL-3.0 
+//!--This is a test file --- 
 
 #include <stdio.h> 
 #include "optkit.h" 
@@ -17,6 +18,8 @@ int main(int ac , char * const *av)
   char * basename = optkit_get_basename(av) ;
 
   printf(" %s \012" , basename)  ; 
+
+  puts("this is a test") ; 
 
   return 0 ; 
 }

@@ -18,3 +18,6 @@ config.guess
 config.sub 
 depcomp 
 
+build/
+.deps/
+config.log 

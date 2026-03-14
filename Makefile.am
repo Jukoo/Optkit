@@ -1,6 +1,12 @@
 AUTOMAKE_OPTIONS = foreign 
 
-SUBDIRS = src 
+SUBDIRS=lib 
+
+bin_PROGRAMS=test 
+test_SOURCES=test.c 
+test_LDADD=lib/liboptkit.la 
+test_CFLAGS=-I lib 
+
 
 clean-local:
 	@rm config.status config.log
