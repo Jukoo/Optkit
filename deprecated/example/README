@@ -1,6 +1,0 @@
-Here is simple example how to use  libarghlp 
-
-This dummy programme just check a file is an ELF format (Executable Linkable File)  
-
-Just take a look  about the main.c and see  how the library work 
-
