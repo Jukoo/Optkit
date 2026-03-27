@@ -19,7 +19,6 @@ int main(int ac , char * const *av)
 
   printf(" %s \012" , basename)  ; 
 
-  puts("this is a test") ; 
 
   return 0 ; 
 }

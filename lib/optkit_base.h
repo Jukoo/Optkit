@@ -111,7 +111,6 @@ static inline  size_t  __optkit_breffing_usage(int  argreq)
 /* Record options in memory stream buffer  */
 static inline size_t __optkit_record_helper(base_optkit_t * option)  
 {
-  (void *) init_memstream_buffer_cookies() ; 
   static size_t argument_requested=3,  
                 help_caddr=0, 
                 stat = 0; 
@@ -121,7 +120,8 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
     if(stat != argument_requested)
       stat = argument_requested ; 
   }
-  
+
+  optkit_wat(USAGE_SECTION , "this is  a test\012") ;  
   asprintf(&s ,  HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
  
   /*  

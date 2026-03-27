@@ -116,13 +116,18 @@ static inline struct __page_io_location_t  *
 __get_partition_location_address(struct __optkit_memsb_t * new_ctxc) 
 {
   unsigned start = 0 ; 
-  struct  __page_io_location_t * ioloc = malloc(sizeof(*ioloc)) ;  
+  struct  __page_io_location_t * ioloc = malloc(sizeof(struct  __page_io_location_t *)) ;  
   if(!ioloc) 
     return 00 ; 
   
   struct  __section_t  secpart =  new_ctxc->_scope_interval[new_ctxc->_partition_index]; 
 
   ioloc->_io_location_address =  new_ctxc->_msbio_cookies->_sbuff+secpart._begin ;   
+  
+  memcpy(&ioloc->_chunck_part , &secpart ,   sizeof(struct __section_t)) ; 
+
+  
+  //!CHECK OVERFLOW ...
   if(ioloc->_io_location_address > new_ctxc->_msbio_cookies->_ebuff)
   {
     free(ioloc) ,  ioloc = 00 ;  
@@ -136,11 +141,10 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc)
 static inline  size_t  
 write_at(struct __page_io_location_t * ioloc , const char * ubuff ,  size_t  wbytes) 
 {
-  ssize_t  limites  = ioloc->_chunck_part._end - ioloc->_chunck_part._begin; 
   ioloc->_chunck_part._coffset+=wbytes;  
 
-  if(ioloc->_chunck_part._coffset >limites) 
-    return  -1 ; 
+  if(ioloc->_chunck_part._coffset >= ioloc->_chunck_part._end) 
+    return  EOF ;  
 
 
   memcpy(ioloc->_io_location_address,ubuff , wbytes) ; 
@@ -170,16 +174,16 @@ init_memstream_buffer_cookies(void) ;
 
 
 /* Predefined Hooks  for cookies stream   io manipulation */ 
-static ssize_t  
+ssize_t  
 iomem_write(void * ctx_cookies , const char * buff , size_t wbytesize) ; 
 
-static ssize_t  
+ssize_t  
 iomem_read(void * ctx_cookies , char * buff  , size_t rbytesize) ;  
 
-static  int 
+int 
 iomem_seek(void * ctx_cookies ,  off_t *offset , int whence) ; 
 
-static int 
+int 
 iomem_close(void * ctx_cookies) ; 
 
 

@@ -16,18 +16,14 @@ struct __optkit_memsb_t ctx_cookies  = {00 , {
     _SYNOPSYS_SECTION, 
     _HELPER_SECTION,
     _FOOTER_SECTION
-}}; 
-
-//init_memstream_buffer_cookies(int lock_permission) 
-struct __optkit_memsb_t * 
-init_memstream_buffer_cookies(void) 
-{
-  ctx_cookies._msbio_cookies=  __setup_membuff_cookies() ; 
-  if(ctx_cookies._msbio_cookies) 
-    return 00 ;  
+}, 
+  USAGE_SECTION}; 
   
-  cookie_io_functions_t  hooks = { 
-     .write = iomem_write,
+cookie_io_functions_t  hooks = { 
+     .write = iomem_write, 
+     .read  =  (void *) 00, 
+     .close =  (void *) 00, 
+     .seek  =  (void *) 00
      /*.read= iomem_read, 
       *.close=iomem_close,
       *.seek =iomem_seek
@@ -35,7 +31,15 @@ init_memstream_buffer_cookies(void)
   }; 
 
 
-  optkit_stream  =  fopencookie(&ctx_cookies , "rw" ,  hooks) ; 
+//init_memstream_buffer_cookies(int user_lock_permission) 
+struct __optkit_memsb_t * 
+init_memstream_buffer_cookies(void) 
+{
+  ctx_cookies._msbio_cookies=  __setup_membuff_cookies() ; 
+  if(!ctx_cookies._msbio_cookies) 
+    return 00 ;  
+
+  optkit_stream  =  fopencookie(&ctx_cookies , "w+" ,  hooks) ; 
   
   if(!optkit_stream) 
   {
@@ -43,13 +47,16 @@ init_memstream_buffer_cookies(void)
      return  00 ; 
   }
   
+  setvbuf(optkit_stream ,  00 ,  _IONBF ,0 ) ; 
 
-   return  &ctx_cookies ; 
+  return  &ctx_cookies ; 
 } 
 
-static ssize_t
+ssize_t
 iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes) 
 { 
+
+  puts("called") ; 
   struct __optkit_memsb_t *new_ctx_cookies =(struct  __optkit_memsb_t *) ctx_cookies ;
   struct __membuff_cookies_t  * mbios =  new_ctx_cookies->_msbio_cookies ;  
   struct __page_io_location_t * waddr_offt = 00 ;  
@@ -118,6 +125,7 @@ size_t  optkit_wat(int  partition ,  const char * fmt  , ...)
    va_list ap ; 
    va_start(ap , fmt); 
    ctx_cookies = *wupdate(&ctx_cookies , partition) ;
+  
    bwriten = vfprintf(optkit_stream , fmt , ap) ;  
    va_end(ap) ; 
 

@@ -27,6 +27,12 @@ char * optkit_get_basename(char *const * argv)
 
 void optkit_parse(base_optkit_t *restrict options, char * const  *av)   
 {
+  
+  if (!init_memstream_buffer_cookies()) 
+  {
+    fprintf(stderr , "fail to initialize memory stream buffer \012") ; 
+    return ; 
+  }
   optkit_pbn = optkit_get_basename(av) ;
   mopt._max_entries  =  __optkit_get_entries(options) ;
   mopt._ds_goptl= optkit_extract_option(options ,  &mopt); 
