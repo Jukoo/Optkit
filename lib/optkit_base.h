@@ -121,15 +121,10 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
       stat = argument_requested ; 
   }
 
-  optkit_wat(USAGE_SECTION , "this is  a test\012") ;  
-  asprintf(&s ,  HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
- 
-  /*  
-  optkit_write_at((HELPER_SECTION+help_caddr),"%s" ,s) ; 
-  help_caddr+=strlen(s) ; 
-  free(s) , s=0; 
-  */ 
-
+  asprintf(&s ,HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
+  
+  //!NOTE  : Write at HELPER section  see definition of coord in "bits/type/optkit_help_cs.h"
+  optkit_wat(HELPER_SECTION  , "%s" , s ); 
 
   return argument_requested  ;  
 }
@@ -174,6 +169,18 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 
   return super_opt ;  
 } 
+
+static inline size_t optkit_dump(void)  
+{
+   //NOTE : testing ...
+   char  buf[102]={0}; 
+  
+   size_t rb = optkit_rat(HELPER_SECTION ,buf , 102) ; 
+
+   printf("%s \012 size  %li\012" , buf, rb) ; 
+
+   return  rb ; 
+}
 
 extern char * optkit_get_basename(char *const *  argument_vector) ; 
 extern void optkit_show_usage(void) ; 

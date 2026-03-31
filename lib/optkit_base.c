@@ -42,6 +42,8 @@ void optkit_parse(base_optkit_t *restrict options, char * const  *av)
      return ;  
   }
   //optkit_show_usage() ; 
+  
+  optkit_dump() ;  
   return  ; 
 }
 
@@ -49,5 +51,9 @@ void optkit_show_usage(void)
 { 
   setvbuf(stdout ,  00 , _IONBF , 0);  
   printf("%s", helper_record._bptr); 
-  
+ 
 }
+
+
+
+   

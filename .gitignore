@@ -20,3 +20,4 @@ depcomp
 build/
 .deps/
 config.log 
+tags 
