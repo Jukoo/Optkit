@@ -87,6 +87,12 @@ struct  __page_io_location_t{
    struct __section_t _chunck_part; 
 };  
 
+typedef  struct __partition_user_buffer_block_t pubb_t ; 
+struct __partition_user_buffer_block_t { 
+   char * _buffer_block ;  
+   size_t _block_size  ; 
+}; 
+
 
 extern   FILE *  optkit_stream ; 
 extern   struct __optkit_memsb_t ctx_cookies ;   
@@ -122,12 +128,14 @@ _free_mcookies:
 static inline off_t  
 __io_offaddr(struct __section_t secpartition , int  io_mode)  
 {
-
-  if(_IOM_WRITE  == io_mode)  
-    return secpartition._begin + secpartition._coffset; 
+  off_t  offset = 0 ; 
+  if(_IOM_WRITE  == io_mode)
+    offset =  secpartition._begin + secpartition._coffset; 
 
   if(io_mode & _IOM_READ)
-    return secpartition._begin ; 
+    offset=secpartition._begin;  
+
+  return offset ; 
 }
 
 
@@ -135,14 +143,14 @@ static inline struct __page_io_location_t  *
 __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode)   
 {
   unsigned start = 0 ; 
-  off_t  offset_address = 0 ; 
+  off_t  offset_address = 0 ;
   struct  __page_io_location_t * ioloc = malloc(sizeof(struct  __page_io_location_t *)) ;  
   if(!ioloc) 
     return 00 ;
   
   struct  __section_t  secpart =  new_ctxc->_scope_interval[new_ctxc->_partition_index]; 
 
-  offset_address = __io_offaddr(secpart, io_mode) ;  
+  offset_address = __io_offaddr(secpart, io_mode);  
 
   ioloc->_io_location_address =  new_ctxc->_msbio_cookies->_sbuff+offset_address ; 
   
@@ -176,13 +184,13 @@ static  inline   size_t
 read_at(struct __page_io_location_t  * ioloc , char * ubuff , size_t   rbytes) 
 {
   size_t locpart_threshold = ioloc->_chunck_part._end -  ioloc->_chunck_part._coffset ; 
-  
+  size_t rofft = ioloc->_chunck_part._coffset ; 
   if (rbytes > locpart_threshold) 
      rbytes =  locpart_threshold ; 
+ 
 
-  printf("%s \012 ",(char *) ioloc->_io_location_address ) ; 
-
-  memcpy(ubuff , ioloc->_io_location_address , rbytes);   
+  memcpy(ubuff , ioloc->_io_location_address+rofft , rbytes);  
+  ioloc->_chunck_part._coffset++; 
 
   return rbytes ;  
 }
@@ -204,10 +212,10 @@ static inline void *  __expand_buffer(struct __optkit_memsb_t * new_ctxc)
 
   return  new_ctxc ; 
 
-}
+} 
+
 struct  __optkit_memsb_t *  
 init_memstream_buffer_cookies(void) ;  
-
 
 /* Predefined Hooks  for cookies stream   io manipulation */ 
 ssize_t  
@@ -235,7 +243,7 @@ size_t
 optkit_wat(int partion  , const char * fmt , ...);  
 
 size_t 
-optkit_rat(int partition, char * buffer ,  size_t rbytes); 
+optkit_rat(int partition); 
 
 
 #endif //!   _SYS_TYPE_OPTKIT_CS_HLP 

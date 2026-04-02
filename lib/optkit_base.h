@@ -172,12 +172,8 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 
 static inline size_t optkit_dump(void)  
 {
-   //NOTE : testing ...
-   char  buf[102]={0}; 
   
-   size_t rb = optkit_rat(HELPER_SECTION ,buf , 102) ; 
-
-   printf("%s \012 size  %li\012" , buf, rb) ; 
+   size_t rb = optkit_rat(HELPER_SECTION) ; 
 
    return  rb ; 
 }

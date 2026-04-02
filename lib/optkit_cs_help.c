@@ -94,28 +94,26 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
   }
 
   free(waddr_offt) , waddr_offt =0 ; 
-  return  wbytes ; 
+  return   bwriten ;  
 } 
 
 ssize_t  iomem_read(void * ctx_cookies , char *   ubuff ,  size_t rbytes) 
-{
-  static int i = 0; 
-  i++ ; 
-
-  printf("times  %i\012" ,i) ; 
+{ 
+ 
   struct __optkit_memsb_t *  new_ctx_cookies = (struct __optkit_memsb_t*)  ctx_cookies ; 
-  struct __section_t secpart = new_ctx_cookies->_scope_interval[new_ctx_cookies->_partition_index]; 
+  struct __section_t *secpart = (new_ctx_cookies->_scope_interval+new_ctx_cookies->_partition_index); 
   struct __page_io_location_t * raddr_offt = 00; 
   size_t rb = 0 ;  
 
+  raddr_offt =  __get_partition_location_address(new_ctx_cookies , _IOM_READ);   
+  rb = read_at(raddr_offt , ubuff ,  rbytes);  
+
+  memcpy(secpart,  &raddr_offt->_chunck_part , sizeof(struct __section_t)) ; 
   
-  raddr_offt =  __get_partition_location_address(new_ctx_cookies , _IOM_READ); 
-  
-  printf(" %s  ::  %s \012", __func__ ,  (char *) raddr_offt->_io_location_address) ;  
-  rb = read_at(raddr_offt , ubuff ,  rbytes); 
+  free(raddr_offt) ,raddr_offt=00; 
 
   //!NOTE : The cursor offset  is not updated  !WARNING! 
-
+   
   return rb  ; 
 }
 
@@ -124,10 +122,12 @@ __update_context_cookies(struct __optkit_memsb_t * ctxc , int partition_index , 
 {
   ctxc->_partition_index = partition_index;  
   
-  if(0 < iom_flags){
+  if(iom_flags & _IOM_READ){
     //in read mode ;
-    struct __section_t p = ctxc->_scope_interval[partition_index] ;  
-    //p._coffset =  p._begin ; 
+    struct __section_t p = ctxc->_scope_interval[partition_index] ; 
+    
+    //!NO saved: because the read mode read  on block at once ; 
+    p._coffset = 0 ;  
     memcpy((ctxc->_scope_interval+partition_index) , &p , sizeof(p)) ;  
   } 
 
@@ -159,16 +159,23 @@ size_t  optkit_wat(int  partition ,  const char * fmt  , ...)
    return bwriten ; 
 }
 
-size_t optkit_rat(int partition , char * ubuff ,   size_t rbytes) 
+size_t optkit_rat(int partition)  
 {
-  size_t breaded =0 ;  
-
+  struct __section_t section = ctx_cookies._scope_interval[partition];  
+  size_t breaded =  section._coffset; 
+  char * buffer = 00 ; 
   //!Update the  global  cookies context stream ... 
   ctx_cookies =  *rupdate(&ctx_cookies , partition); 
   
-  fgets(ubuff , rbytes , optkit_stream) ;  
+  buffer = malloc(breaded) ;
+  if(!buffer)
+    return ~0 ;  
+ 
+  breaded ^=fread(buffer ,1,breaded,optkit_stream) ; 
+ 
+  printf("-->> %s\012",buffer ) ;
 
-  //breaded = fread(ubuff, rbytes,1,optkit_stream) ;
+  free(buffer) ; 
 
-  return rbytes ; 
+  return breaded;   
 }
