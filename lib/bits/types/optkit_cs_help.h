@@ -79,7 +79,10 @@ typedef struct __section_t sections_t[NSECTIONS];
 struct __optkit_memsb_t {    
   struct __membuff_cookies_t *_msbio_cookies ;  
   sections_t  _scope_interval; 
-  unsigned char  _partition_index ; 
+  unsigned char  _partition_index; 
+  union {
+     size_t _real_buffer_size ;  
+  }
 }; 
 
 struct  __page_io_location_t{ 
@@ -106,7 +109,7 @@ __setup_membuff_cookies(void)
     goto _free_mcookies ;
 
   
-  mcookies->_sbuff = malloc(HELPER_STREAM_BUFFER_SIZE) ; 
+  mcookies->_sbuff = calloc(sizeof(char) , HELPER_STREAM_BUFFER_SIZE) ; 
   if(!mcookies->_sbuff) 
     goto _free_mcookies ; 
 
@@ -147,9 +150,10 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode
   struct  __page_io_location_t * ioloc = malloc(sizeof(struct  __page_io_location_t *)) ;  
   if(!ioloc) 
     return 00 ;
-  
-  struct  __section_t  secpart =  new_ctxc->_scope_interval[new_ctxc->_partition_index]; 
+ 
+  memset(ioloc , 0 , sizeof(struct __page_io_location_t*)) ; 
 
+  struct  __section_t  secpart =  new_ctxc->_scope_interval[new_ctxc->_partition_index]; 
   offset_address = __io_offaddr(secpart, io_mode);  
 
   ioloc->_io_location_address =  new_ctxc->_msbio_cookies->_sbuff+offset_address ; 
@@ -243,7 +247,9 @@ size_t
 optkit_wat(int partion  , const char * fmt , ...);  
 
 size_t 
-optkit_rat(int partition); 
+optkit_rat(int partition ,  char * buffer , int  bf_check); 
 
+ 
+size_t optkit_iombufsize(unsigned char **buffer);  
 
 #endif //!   _SYS_TYPE_OPTKIT_CS_HLP 

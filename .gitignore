@@ -21,3 +21,4 @@ build/
 .deps/
 config.log 
 tags 
+*.dbg

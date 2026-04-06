@@ -5,8 +5,6 @@
 #include <stdarg.h> 
 
 
-
-
 //!NOTE::Warning: THIS ! is a shared resources between ios stream operation  
 //!     : on memery buffer.
 
@@ -22,12 +20,8 @@ struct __optkit_memsb_t ctx_cookies  = {00 , {
 cookie_io_functions_t  hooks = { 
      .write = iomem_write, 
      .read  = iomem_read, 
-     .close =  (void *) 00, 
-     .seek  =  (void *) 00
-     /*.read= iomem_read, 
-      *.close=iomem_close,
-      *.seek =iomem_seek
-      */
+     .close =  (void *) 00, //iomem_close
+     .seek  =  (void *) 00 /*!NOT needed */ 
   }; 
 
 
@@ -46,8 +40,9 @@ init_memstream_buffer_cookies(void)
      free(ctx_cookies._msbio_cookies), ctx_cookies._msbio_cookies=00; 
      return  00 ; 
   }
-  
-  setvbuf(optkit_stream ,  00 ,  _IONBF ,0 ) ; 
+ 
+  //!Disable buffering on  optkit_stream ... 
+  setvbuf(optkit_stream ,  00 , _IONBF ,0 ) ; 
 
   return  &ctx_cookies ; 
 } 
@@ -70,7 +65,7 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
    * the end of buffer. by doubling the size of _page_allocation 
    * */ 
   if((global_offset &~(mbios->_page_allocation-1))){
-    if(!__expand_buffer(new_ctx_cookies)) 
+    if(!__expand_buffer(new_ctx_cookies))   
       return -ENOMEM; 
   }
 
@@ -81,10 +76,13 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
     return  -EOVERFLOW ;  
 
   size_t bwriten = (local_offset >> 0x10)  , 
-         loffset = (local_offset &  0xffff) ;  
+         loffset = (local_offset &  0xffff) ;   
+ 
+  //Keep  saving the real size of the buffer; 
+  if (bwriten) 
+    new_ctx_cookies->_real_buffer_size+=bwriten+2;  
   
   //update the local offset of the current partion index  
-  //new_ctx_cookies->_scope_interval[partition_idx]._coffset+=local_offset ;  
   new_ctx_cookies->_scope_interval[partition_idx]._coffset= loffset ;   
 
 
@@ -109,7 +107,6 @@ ssize_t  iomem_read(void * ctx_cookies , char *   ubuff ,  size_t rbytes)
   rb = read_at(raddr_offt , ubuff ,  rbytes);  
 
   memcpy(secpart,  &raddr_offt->_chunck_part , sizeof(struct __section_t)) ; 
-  
   free(raddr_offt) ,raddr_offt=00; 
 
   //!NOTE : The cursor offset  is not updated  !WARNING! 
@@ -149,33 +146,44 @@ size_t  optkit_wat(int  partition ,  const char * fmt  , ...)
    size_t  bwriten=0 ; 
    va_list ap ; 
    va_start(ap , fmt); 
-  
+   char *s = 0 ;
    //!Update the  global  cookies context stream ... 
-   ctx_cookies = *wupdate(&ctx_cookies , partition) ;
+   ctx_cookies = *wupdate(&ctx_cookies , partition) ; 
+   vasprintf(&s, fmt , ap) ; 
+   va_end(ap) ;  
   
-   bwriten = vfprintf(optkit_stream , fmt , ap) ;  
-   va_end(ap) ; 
-
+   bwriten = fwrite(s,1,strlen(s),optkit_stream) ; 
+  
    return bwriten ; 
 }
 
-size_t optkit_rat(int partition)  
+size_t optkit_rat(int partition , char *buffer, int bf_check)  
 {
   struct __section_t section = ctx_cookies._scope_interval[partition];  
-  size_t breaded =  section._coffset; 
-  char * buffer = 00 ; 
+  size_t breaded =  section._coffset;  
+  static unsigned int bcheck =0 ;  
   //!Update the  global  cookies context stream ... 
-  ctx_cookies =  *rupdate(&ctx_cookies , partition); 
+  ctx_cookies =  *rupdate(&ctx_cookies , partition);
   
-  buffer = malloc(breaded) ;
-  if(!buffer)
-    return ~0 ;  
+  breaded =fread((buffer+bcheck),1,breaded,optkit_stream) ; 
+  //memset((buffer+breaded) , 0xa  , 2 ) ; 
+  //breaded+=2 ; 
+  if(bf_check) 
+    bcheck+=breaded ; 
  
-  breaded ^=fread(buffer ,1,breaded,optkit_stream) ; 
- 
-  printf("-->> %s\012",buffer ) ;
-
-  free(buffer) ; 
 
   return breaded;   
 }
+
+
+size_t optkit_iombufsize(unsigned char **buffer)  
+{
+  size_t tbbs =  ctx_cookies._real_buffer_size ;
+  *buffer = calloc(sizeof(char),tbbs);  
+  if(!buffer) 
+    return -1 ; 
+   
+  return tbbs ; 
+
+}
+

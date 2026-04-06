@@ -17,9 +17,22 @@
 # define _Nullable 
 #endif 
 
+
+typedef typeof(const char * (const char *fmt , ...)) *fxtract  ; 
+
+typedef  struct __optkit_extra_info_t  optkit_xtra_info_t; 
+struct __optkit_extra_info_t { 
+  fxtract _f ; 
+  char * _xinfo ;  
+} ; 
+
 typedef struct __base_optkit_t {
    struct option _lopt; 
    const char *  _description; 
+   union {
+    struct __optkit_extra_info_t *_extrainfo[2];  
+   }; 
+
 } base_optkit_t ; 
 
 typedef  struct  __optkit_t { 
@@ -45,6 +58,8 @@ typedef  struct __optkit_recbuf_t  {
   FILE * _bmrec  ; 
   char  *_bptr ; 
   size_t _bytes; 
-} optkit_recbuf_t; 
+} optkit_recbuf_t;
+
+
 
 #endif 

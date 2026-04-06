@@ -20,9 +20,8 @@
 //! just one record is enougth ...   
 extern optkit_recbuf_t  helper_record ;        /*Record helper  in memory buffer*/ 
 extern optkit_meta_t mopt ;  
-extern char * optkit_pbn ;  
-
-
+extern char * optkit_pbn ; 
+extern optkit_xtra_info_t  _s , _f ; 
 //! Or use strlen  
 #define chrlen(str) __get_amount_nsize(str , 0)  
 static  inline size_t  __get_amount_nsize(const  char * basename , int index) 
@@ -89,32 +88,20 @@ static inline void __optkit_build_sopt(char *  _Nonnull  sopt , const  gopt_t  l
 
 } 
 
-static inline int __optkit_init_bmrec(void) 
-{
-  
-  
-  /* 
-  if(helper_record._bmrec) return 0; 
-  helper_record._bmrec = open_memstream(&helper_record._bptr , &helper_record._bytes); 
-  
-  return  (helper_record._bmrec) ? 0 : ~0 ;  
-  */ 
-  return  0 ; 
-} 
-
-static inline  size_t  __optkit_breffing_usage(int  argreq) 
+static inline  size_t  __optkit_breffing_usage(int  argdef) 
 { 
   char usage_brief[][0x64] = OPTKIT_USAGE_CLASSIFICATIONS ; 
-  //optkit_write_at(USAGE_SECTION,"Usage :%s %s",optkit_pbn , *(argreq + usage_brief)) ; 
-  return 0 ;  
+  return optkit_wat(USAGE_SECTION, USGFMT , optkit_pbn , *(argdef+usage_brief)) ;  
 } 
+
 /* Record options in memory stream buffer  */
 static inline size_t __optkit_record_helper(base_optkit_t * option)  
 {
   static size_t argument_requested=3,  
                 help_caddr=0, 
                 stat = 0; 
-  char *s = 0 ; 
+  char *s = 0 ;  
+
   if(argument_requested){
     argument_requested^= !(option->_lopt.has_arg^stat) ? option->_lopt.has_arg: stat; 
     if(stat != argument_requested)
@@ -123,7 +110,7 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
 
   asprintf(&s ,HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
   
-  //!NOTE  : Write at HELPER section  see definition of coord in "bits/type/optkit_help_cs.h"
+  //!NOTE: see definition   in "bits/type/optkit_help_cs.h"
   optkit_wat(HELPER_SECTION  , "%s" , s ); 
 
   return argument_requested  ;  
@@ -134,7 +121,7 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 {
   unsigned int entries = 1 , 
                shopt_size =entries, 
-               idx =~0 , argn =0 ;  
+               idx =~0 , argdef=0 ;  
    
   entries+= (meta_option->_max_entries >> 8) ; 
   shopt_size = meta_option->_max_entries & 0xff ; 
@@ -159,25 +146,39 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
     if(!single_opt->_lopt.name)   
       continue ; 
     
-    __optkit_build_sopt(meta_option->_shortopts, single_opt->_lopt); 
-    argn  =__optkit_record_helper(single_opt) ; 
-  }
-  
-  
-  __optkit_breffing_usage(argn) ; 
+    __optkit_build_sopt(meta_option->_shortopts, single_opt->_lopt);
+
+    /*Determine how the usage should be illustrated */
+    argdef =__optkit_record_helper(single_opt) ; 
+  }   
+
+  __optkit_breffing_usage(argdef) ; 
   assert(!strlen(meta_option->_shortopts) ^shopt_size); 
 
   return super_opt ;  
 } 
 
-static inline size_t optkit_dump(void)  
+static inline unsigned  int optkit_dump(void)  
 {
-  
-   size_t rb = optkit_rat(HELPER_SECTION) ; 
+  unsigned int section_idx= ~0 ;
+  size_t refbytes =  0 ; 
+  unsigned char *buffer_register=00; 
 
-   return  rb ; 
+  refbytes= optkit_iombufsize(&buffer_register);
+  if(!(~0^ refbytes))  
+    return  ~0 ; 
+  
+
+#define  __KEEP_FLOWING 1 
+  while(++section_idx  < NSECTIONS) 
+    refbytes -=optkit_rat(section_idx,buffer_register,__KEEP_FLOWING);  
+
+  //printf("%s \012" , buffer_register) ;
+
+   return refbytes ;  
 }
 
+extern int optkit_looking_extra_info(base_optkit_t * _Nonnull options) ; 
 extern char * optkit_get_basename(char *const *  argument_vector) ; 
 extern void optkit_show_usage(void) ; 
 extern void optkit_parse(base_optkit_t * __restrict__ _Nonnull options , char *const *av) ; 
