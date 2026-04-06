@@ -23,7 +23,7 @@ subdir('lib')
 executable( 
   'test_optkit', 
   'test.c',
-  include_directories:['lib'],
+  include_directories:['lib' , 'lib/bits/types'],
   link_with:optkit_so
   )
 

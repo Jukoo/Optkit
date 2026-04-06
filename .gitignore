@@ -1,6 +1,5 @@
 bin/*
 build/*
-lib/* 
 example/bin/*
 example/build/*
 TODO.md 
@@ -21,3 +20,5 @@ depcomp
 build/
 .deps/
 config.log 
+tags 
+*.dbg
