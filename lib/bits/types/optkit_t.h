@@ -22,26 +22,25 @@ typedef typeof(const char * (const char *fmt , ...)) *fxtract  ;
 
 typedef  struct __optkit_extra_info_t  optkit_xtra_info_t; 
 struct __optkit_extra_info_t { 
-  fxtract _f ; 
+  fxtract _f ;  //NOTE  : not used  yet  !  
   char * _xinfo ;  
 } ; 
 
 typedef struct __base_optkit_t {
    struct option _lopt; 
    const char *  _description; 
-   union {
-    struct __optkit_extra_info_t *_extrainfo[2];  
-   }; 
-
 } base_optkit_t ; 
 
 typedef  struct  __optkit_t { 
    struct  __base_optkit_t * _optkit_base ;
-   char  * _sysnosys  ; 
-   char  * _footer ; 
+   struct  { 
+     struct __optkit_extra_info_t * _extrainfo[2] ;
+     unsigned char _xinfo_flags; 
+   }; 
    union { 
      struct __optkit_meta_t *_optkit_mcollect ; 
-   }; 
+   };  
+  
 
 } optkit_t ;  
  

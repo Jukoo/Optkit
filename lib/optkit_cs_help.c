@@ -56,13 +56,16 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
   struct __page_io_location_t * waddr_offt = 00 ;  
   
   size_t global_offset =   mbios->_offset +  wbytes , 
-         local_offset  = 0  ; 
+         loffset  = 0  , 
+         bwriten = 0 ; 
   unsigned int partition_idx = new_ctx_cookies->_partition_index ;
   char *buffer_expension = 00 ; 
+  
   
   /* 
    * Expand the  page  buffer  when the global offset reach 
    * the end of buffer. by doubling the size of _page_allocation 
+   * NOTE: make copy on write  and expand  each  section 
    * */ 
   if((global_offset &~(mbios->_page_allocation-1))){
     if(!__expand_buffer(new_ctx_cookies))   
@@ -71,12 +74,12 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
 
   waddr_offt = __get_partition_location_address(new_ctx_cookies , _IOM_WRITE);   
 
-  local_offset =  write_at(waddr_offt , user_buffer , wbytes) ;
-  if(-1 == local_offset) 
+  loffset =  write_at(waddr_offt , user_buffer , wbytes) ;
+  if(-1 == loffset) 
     return  -EOVERFLOW ;  
 
-  size_t bwriten = (local_offset >> 0x10)  , 
-         loffset = (local_offset &  0xffff) ;   
+  bwriten = (loffset >> 0x10) ; 
+  loffset = loffset  & 0xffff ;  
  
   //Keep  saving the real size of the buffer; 
   if (bwriten) 
@@ -166,8 +169,7 @@ size_t optkit_rat(int partition , char *buffer, int bf_check)
   ctx_cookies =  *rupdate(&ctx_cookies , partition);
   
   breaded =fread((buffer+bcheck),1,breaded,optkit_stream) ; 
-  //memset((buffer+breaded) , 0xa  , 2 ) ; 
-  //breaded+=2 ; 
+  
   if(bf_check) 
     bcheck+=breaded ; 
  

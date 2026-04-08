@@ -13,8 +13,10 @@
 #define optkit_err(f) \
   do{perror(#f), fprintf(stderr , __sterr__);}while(0) 
 
-#define  USGFMT   " Usage : %s :%s\012\012"
+#define  USGFMT   " Usage : %s :%s\012\012" 
+#define  SYNFMT   "%s\012\012"
 #define  HLPFMT   "  -%c, --%s \011\011%s\012" 
+#define  FTRFMT   "\012%s\012\012"
 
 #define optkit_write_at(offset_region , ... ) \
   sprintf(offset_region , __VA_ARGS__) 
@@ -24,8 +26,6 @@
     "[OPTION]...",\
     "[ARGS]...",\
 } 
-#define  MAX_BUF 0xFF 
-
 
 #define optkit_sysnopsys(...) \
   optkit_write_at(synosys ,  __VA_ARGS__)
@@ -36,7 +36,7 @@
 
 
 #define optkit_begin(identifier , ... ) \
-  optkit_xtra_info_t _s = {._xinfo =  __VA_ARGS__ };\
+  optkit_xtra_info_t _s = {._xinfo = __VA_ARGS__ };\
   base_optkit_t identifier[] = { 
 
 #define noarg(__loption ,  __description) \
