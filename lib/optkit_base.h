@@ -158,27 +158,46 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
   return super_opt ;  
 } 
 
-static inline unsigned  int optkit_dump(void)  
+static inline int   __optkit_record_xtra_info(struct __optkit_t *optkit) 
+{ 
+  
+  switch(optkit->_xinfo_flags){
+    case  1 :  
+      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
+      break; 
+    case  2 :   
+      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
+      break ; 
+    case  3 : 
+      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
+      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
+      break ;  
+  }; 
+
+  return 0 ; 
+}
+static inline unsigned  int optkit_dump(struct __optkit_t  * optkit)   
 {
   unsigned int section_idx= ~0 ;
   size_t refbytes =  0 ; 
   unsigned char *buffer_register=00; 
+  
+  __optkit_record_xtra_info(optkit) ; 
 
   refbytes= optkit_iombufsize(&buffer_register);
   if(!(~0^ refbytes))  
     return  ~0 ; 
   
-
 #define  __KEEP_FLOWING 1 
   while(++section_idx  < NSECTIONS) 
     refbytes -=optkit_rat(section_idx,buffer_register,__KEEP_FLOWING);  
 
-  //printf("%s \012" , buffer_register) ;
+  printf("%s \012" , buffer_register) ;
 
    return refbytes ;  
 }
 
-extern int optkit_looking_extra_info(base_optkit_t * _Nonnull options) ; 
+extern int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
 extern char * optkit_get_basename(char *const *  argument_vector) ; 
 extern void optkit_show_usage(void) ; 
 extern void optkit_parse(base_optkit_t * __restrict__ _Nonnull options , char *const *av) ; 

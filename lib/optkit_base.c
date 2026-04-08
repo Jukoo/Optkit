@@ -32,38 +32,51 @@ void optkit_parse(base_optkit_t *restrict options, char * const  *av)
     return ; 
   }
   
+  optkit_t   optk = {._optkit_base = options , ._xinfo_flags =0};  
+
   optkit_pbn = optkit_get_basename(av) ;
   mopt._max_entries  =  __optkit_get_entries(options) ;
-  optkit_looking_extra_info(options) ; 
-  mopt._ds_goptl= optkit_extract_option(options ,  &mopt); 
+  optkit_looking_extra_info(&optk)  ; 
+  mopt._ds_goptl= optkit_extract_option(optk._optkit_base,  &mopt); 
 
   if(!mopt._ds_goptl){
      optkit_err(optkit_extract_option) ; 
      return ;  
   }
-  //optkit_show_usage() ; 
+  optk._optkit_mcollect  = &mopt ; 
   
-  optkit_dump() ; 
+  
+  optkit_dump(&optk) ; 
  
   //!__optkit_clean(mopt) ; 
   return  ; 
 } 
 
-int optkit_looking_extra_info(base_optkit_t  * options) 
-{ 
-  size_t t =  strlen(_s._xinfo) +  strlen(_f._xinfo) ; 
-
-  if(0 < t) ; 
-  {
-     options->_extrainfo[0] = malloc(sizeof(struct __optkit_extra_info_t)) ; 
-     if(!options->_extrainfo[0]){
-      return ~0 ; 
-     }
-     options->_extrainfo[0] =  &_s ; 
-  }
+int optkit_looking_extra_info(struct __optkit_t *  optkit) 
+{  
+  struct { 
+    void  * _type; 
+    size_t  _size ; 
+  } xinfo_attr[2] ={
+    {(void *) &_s , strlen(_s._xinfo)},
+    {(void *) &_f , strlen(_f._xinfo)} 
+  }; 
   
+  unsigned int i  = ~0 ; 
+  while(++i < 2 ) 
+  {
+    
+     if(0 < xinfo_attr[i]._size){ 
+       optkit->_extrainfo[i]  = malloc(sizeof(struct __optkit_extra_info_t)) ; 
+       if(!optkit->_extrainfo[i])
+         continue ; 
 
-
+       optkit->_extrainfo[i]  = (struct __optkit_extra_info_t *) xinfo_attr[i]._type; 
+       optkit->_xinfo_flags+=(i+1)  ;  
+     } 
+     
+  } 
+   
 }
 
 void optkit_show_usage(void) 

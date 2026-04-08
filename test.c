@@ -17,7 +17,6 @@ optkit_ends("The end footer")
 int main(int ac , char * const *av) 
 {
 
-  printf("%s \012" , _s._xinfo) ; 
   optkit_parse(options , av) ;  
   char * basename = optkit_get_basename(av) ;
 

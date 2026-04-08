@@ -82,7 +82,7 @@ struct __optkit_memsb_t {
   unsigned char  _partition_index; 
   union {
      size_t _real_buffer_size ;  
-  }
+  };
 }; 
 
 struct  __page_io_location_t{ 
@@ -147,7 +147,7 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode
 {
   unsigned start = 0 ; 
   off_t  offset_address = 0 ;
-  struct  __page_io_location_t * ioloc = malloc(sizeof(struct  __page_io_location_t *)) ;  
+  struct  __page_io_location_t * ioloc = malloc(sizeof(*ioloc)) ;  
   if(!ioloc) 
     return 00 ;
  
@@ -156,7 +156,7 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode
   struct  __section_t  secpart =  new_ctxc->_scope_interval[new_ctxc->_partition_index]; 
   offset_address = __io_offaddr(secpart, io_mode);  
 
-  ioloc->_io_location_address =  new_ctxc->_msbio_cookies->_sbuff+offset_address ; 
+  ioloc->_io_location_address =  (new_ctxc->_msbio_cookies->_sbuff+offset_address);  
   
   memcpy(&ioloc->_chunck_part , &secpart ,   sizeof(struct __section_t)) ; 
 
