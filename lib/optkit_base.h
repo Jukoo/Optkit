@@ -116,9 +116,14 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
   return argument_requested  ;  
 }
 
+//!static inline gopt_t *  optkit_extract_option(struct optkit_t * restrict  optkit) 
 static inline gopt_t  * optkit_extract_option(base_optkit_t*  options , 
     optkit_meta_t *__restrict__ meta_option)  
-{
+{ 
+  /* 
+   * base_optkit_t * options =  optkit->_optkit_base ; 
+   * optkit_meta_t * meta_option  =  optkit->_optkit_mcollect ;  
+   */
   unsigned int entries = 1 , 
                shopt_size =entries, 
                idx =~0 , argdef=0 ;  
@@ -157,32 +162,22 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 
   return super_opt ;  
 } 
+static inline int optkit_record_extra_info(const char *  xinfo , unsigned int  type)
+{
+  if(1 & type)
+    optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , xinfo) ; 
 
-static inline int   __optkit_record_xtra_info(struct __optkit_t *optkit) 
-{ 
-  
-  switch(optkit->_xinfo_flags){
-    case  1 :  
-      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
-      break; 
-    case  2 :   
-      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
-      break ; 
-    case  3 : 
-      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
-      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
-      break ;  
-  }; 
-
-  return 0 ; 
+  if(1 & (type >> 1))  
+    optkit_wat(FOOTER_SECTION, FTRFMT , xinfo) ; 
+ 
 }
-static inline unsigned  int optkit_dump(struct __optkit_t  * optkit)   
+
+static inline unsigned  int optkit_register(void)   
 {
   unsigned int section_idx= ~0 ;
   size_t refbytes =  0 ; 
   unsigned char *buffer_register=00; 
   
-  __optkit_record_xtra_info(optkit) ; 
 
   refbytes= optkit_iombufsize(&buffer_register);
   if(!(~0^ refbytes))  
