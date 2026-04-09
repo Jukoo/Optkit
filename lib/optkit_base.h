@@ -18,12 +18,15 @@
 
 
 //! just one record is enougth ...   
-extern optkit_recbuf_t  helper_record ;        /*Record helper  in memory buffer*/ 
 extern optkit_meta_t mopt ;  
-extern char * optkit_pbn ; 
+extern char * optkit_pbn ;
+extern char * optkit_help; 
 extern optkit_xtra_info_t  _s , _f ; 
+
 //! Or use strlen  
 #define chrlen(str) __get_amount_nsize(str , 0)  
+
+
 static  inline size_t  __get_amount_nsize(const  char * basename , int index) 
 { 
   size_t size =  strlen(basename) ; 
@@ -109,16 +112,24 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
   }
 
   asprintf(&s ,HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
-  
-  //!NOTE: see definition   in "bits/type/optkit_help_cs.h"
   optkit_wat(HELPER_SECTION  , "%s" , s ); 
 
   return argument_requested  ;  
 }
 
+static inline void optkit_define_usage(void) 
+{
+   optkit_iombufsave(&optkit_help);  
+}
+
+//!static inline gopt_t *  optkit_extract_option(struct optkit_t * restrict  optkit) 
 static inline gopt_t  * optkit_extract_option(base_optkit_t*  options , 
     optkit_meta_t *__restrict__ meta_option)  
-{
+{ 
+  /* 
+   * base_optkit_t * options =  optkit->_optkit_base ; 
+   * optkit_meta_t * meta_option  =  optkit->_optkit_mcollect ;  
+   */
   unsigned int entries = 1 , 
                shopt_size =entries, 
                idx =~0 , argdef=0 ;  
@@ -157,33 +168,22 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 
   return super_opt ;  
 } 
+static inline int optkit_record_extra_info(const char *  xinfo , unsigned int  type)
+{
+  if(1 & type)
+    optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , xinfo) ; 
 
-static inline int   __optkit_record_xtra_info(struct __optkit_t *optkit) 
-{ 
-  
-  switch(optkit->_xinfo_flags){
-    case  1 :  
-      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
-      break; 
-    case  2 :   
-      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
-      break ; 
-    case  3 : 
-      optkit_wat(SYNOPSYS_SECTION ,  SYNFMT , optkit->_extrainfo[0]->_xinfo) ; 
-      optkit_wat(FOOTER_SECTION ,  FTRFMT , optkit->_extrainfo[1]->_xinfo) ; 
-      break ;  
-  }; 
+  if(1 & (type >> 1))  
+    optkit_wat(FOOTER_SECTION, FTRFMT , xinfo) ; 
+ 
+} 
 
-  return 0 ; 
-}
-static inline unsigned  int optkit_dump(struct __optkit_t  * optkit)   
+static inline unsigned  int optkit_register(void)   
 {
   unsigned int section_idx= ~0 ;
   size_t refbytes =  0 ; 
   unsigned char *buffer_register=00; 
   
-  __optkit_record_xtra_info(optkit) ; 
-
   refbytes= optkit_iombufsize(&buffer_register);
   if(!(~0^ refbytes))  
     return  ~0 ; 
@@ -192,9 +192,11 @@ static inline unsigned  int optkit_dump(struct __optkit_t  * optkit)
   while(++section_idx  < NSECTIONS) 
     refbytes -=optkit_rat(section_idx,buffer_register,__KEEP_FLOWING);  
 
-  printf("%s \012" , buffer_register) ;
-
-   return refbytes ;  
+  optkit_help=strdup(buffer_register); 
+  
+  free(buffer_register), buffer_register=00; 
+  
+  return refbytes ;  
 }
 
 extern int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
