@@ -16,6 +16,7 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
+#include "optkit_t.h" 
 
 #if defined(UNISTD_H)  
 # define HELPER_STREAM_BUFFER_SIZE  sysconf(_SC_PAGESIZE) 
@@ -53,7 +54,7 @@ typedef struct __optkit_memsb_t  optkit_memsb_t ;
 struct __section_t { 
   size_t  _begin, 
           _end; 
-  union  { 
+union  { 
     off_t _coffset ;   //used to remember  where were  you last time    
   } ; 
 };   
@@ -90,15 +91,10 @@ struct  __page_io_location_t{
    struct __section_t _chunck_part; 
 };  
 
-typedef  struct __partition_user_buffer_block_t pubb_t ; 
-struct __partition_user_buffer_block_t { 
-   char * _buffer_block ;  
-   size_t _block_size  ; 
-}; 
+typedef  struct  __optkit_iomsbuf optkit_iomsbuf_t ; 
 
-
-extern   FILE *  optkit_stream ; 
-extern   struct __optkit_memsb_t ctx_cookies ;   
+extern FILE * optkit_stream  ; 
+extern struct __optkit_memsb_t ctx_cookies ;   
 
 
 static  inline struct  __membuff_cookies_t* 
@@ -160,7 +156,7 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode
   
   memcpy(&ioloc->_chunck_part , &secpart ,   sizeof(struct __section_t)) ; 
 
-  //!CHECK OVERFLOW ...
+  //!NOTE: Checking overflow ...
   if(ioloc->_io_location_address > new_ctxc->_msbio_cookies->_ebuff)
   {
     free(ioloc) ,  ioloc = 00 ;  
@@ -228,13 +224,11 @@ iomem_write(void * ctx_cookies , const char * buff , size_t wbytesize) ;
 ssize_t  
 iomem_read(void * ctx_cookies , char * buff  , size_t rbytesize) ;  
 
-int 
-iomem_seek(void * ctx_cookies ,  off_t *offset , int whence) ; 
 
-int 
+int /*TODO : implement iomem_close */ 
 iomem_close(void * ctx_cookies) ; 
 
-
+/*Generic  context used for updating  */
 static struct __optkit_memsb_t  *  
 __update_context_cookies(struct __optkit_memsb_t  * ctx_cookies,  int partindex ,  int iomode_flags) ; 
 
@@ -244,12 +238,17 @@ static  struct __optkit_memsb_t *
 rupdate(struct __optkit_memsb_t * ctx_cookies,  int partindex); 
 
 size_t 
-optkit_wat(int partion  , const char * fmt , ...);  
-
+optkit_wat(int partion, const char * fmt , ...);  
 size_t 
-optkit_rat(int partition ,  char * buffer , int  bf_check); 
+optkit_rat(int partition, char * buffer , int  __bf_check_attribute); 
+size_t
+optkit_iombufsize(unsigned char **buffer); 
+char * 
+optkit_iombufpush(const char * _Nonnull  regbuf); 
+size_t 
+optkit_iomsbufclean(void) ; 
 
- 
-size_t optkit_iombufsize(unsigned char **buffer);  
+size_t optkit_iombufsave(char **sbptr) ; 
+
 
 #endif //!   _SYS_TYPE_OPTKIT_CS_HLP 

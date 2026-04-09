@@ -7,6 +7,7 @@
 
 
 extern char * optkit_pbn ;
+extern char * optkit_help; 
 
 optkit_begin(options, "This program is  a test\n\
 just a illustration programm")  
@@ -23,8 +24,6 @@ int main(int ac , char * const *av)
 
   optkit_parse(options , av) ;  
   char * basename = optkit_get_basename(av) ;
-
-  printf(" %s \012" , basename)  ; 
 
 
   return 0 ; 

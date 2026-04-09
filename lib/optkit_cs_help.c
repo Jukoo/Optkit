@@ -1,14 +1,23 @@
 //!SPDX-License-Identifier:GPL-3.0 
 
-#include "optkit_cs_help.h"  
+#include <assert.h> 
 #include <errno.h> 
 #include <stdarg.h> 
 
+#include "optkit_macro.h"
+#include "optkit_cs_help.h"  
 
 //!NOTE::Warning: THIS ! is a shared resources between ios stream operation  
 //!     : on memery buffer.
 
-FILE * optkit_stream  = (FILE *) 00 ;  
+FILE * optkit_stream = 00; 
+
+struct __optkit_iomsbuf {
+  FILE  *_bmrec  ; 
+  char  *_bptr ; 
+  size_t _bytes; 
+} optkit_iorecorder; 
+
 struct __optkit_memsb_t ctx_cookies  = {00 , {
     _USAGE_SECTION, 
     _SYNOPSYS_SECTION, 
@@ -21,7 +30,6 @@ cookie_io_functions_t  hooks = {
      .write = iomem_write, 
      .read  = iomem_read, 
      .close =  (void *) 00, //iomem_close
-     .seek  =  (void *) 00 /*!NOT needed */ 
   }; 
 
 
@@ -64,8 +72,8 @@ iomem_write(void * ctx_cookies , const char * user_buffer , size_t wbytes)
   
   /* 
    * Expand the  page  buffer  when the global offset reach 
-   * the end of buffer. by doubling the size of _page_allocation 
-   * NOTE: make copy on write  and expand  each  section 
+   * the end of buffer. it'll doubling the size of the page allocation
+   * NOTE: make copy on write  and expand  each  section by ?% 
    * */ 
   if((global_offset &~(mbios->_page_allocation-1))){
     if(!__expand_buffer(new_ctx_cookies))   
@@ -125,11 +133,17 @@ __update_context_cookies(struct __optkit_memsb_t * ctxc , int partition_index , 
   if(iom_flags & _IOM_READ){
     //in read mode ;
     struct __section_t p = ctxc->_scope_interval[partition_index] ; 
-    
-    //!NO saved: because the read mode read  on block at once ; 
+
+    //!NOTE : The cursor offset is not saved. Cauz we want to read the 
+    //entire related bloack at once  
     p._coffset = 0 ;  
     memcpy((ctxc->_scope_interval+partition_index) , &p , sizeof(p)) ;  
   } 
+
+  /* !NOTE: no operation  for _IOM_WRITE mode.
+   * *      Because we need to remember where we were at the  related block buffer 
+   * *      the cursor offset is automaticaly saved  by the <<iomem_write>>  hook  
+   */
 
   return ctxc ; 
 }
@@ -188,4 +202,3 @@ size_t optkit_iombufsize(unsigned char **buffer)
   return tbbs ; 
 
 }
-

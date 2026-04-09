@@ -53,12 +53,8 @@ typedef struct  __optkit_meta_t {
 }optkit_meta_t; 
 
 
-typedef  struct __optkit_recbuf_t  {
-  FILE * _bmrec  ; 
-  char  *_bptr ; 
-  size_t _bytes; 
-} optkit_recbuf_t;
-
+//* Opacque  declaration use in internal */ 
+struct __optkit_iomsbuf ;    
 
 
 #endif 

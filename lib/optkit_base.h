@@ -18,12 +18,15 @@
 
 
 //! just one record is enougth ...   
-extern optkit_recbuf_t  helper_record ;        /*Record helper  in memory buffer*/ 
 extern optkit_meta_t mopt ;  
-extern char * optkit_pbn ; 
+extern char * optkit_pbn ;
+extern char * optkit_help; 
 extern optkit_xtra_info_t  _s , _f ; 
+
 //! Or use strlen  
 #define chrlen(str) __get_amount_nsize(str , 0)  
+
+
 static  inline size_t  __get_amount_nsize(const  char * basename , int index) 
 { 
   size_t size =  strlen(basename) ; 
@@ -109,11 +112,14 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
   }
 
   asprintf(&s ,HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
-  
-  //!NOTE: see definition   in "bits/type/optkit_help_cs.h"
   optkit_wat(HELPER_SECTION  , "%s" , s ); 
 
   return argument_requested  ;  
+}
+
+static inline void optkit_define_usage(void) 
+{
+   optkit_iombufsave(&optkit_help);  
 }
 
 //!static inline gopt_t *  optkit_extract_option(struct optkit_t * restrict  optkit) 
@@ -170,7 +176,7 @@ static inline int optkit_record_extra_info(const char *  xinfo , unsigned int  t
   if(1 & (type >> 1))  
     optkit_wat(FOOTER_SECTION, FTRFMT , xinfo) ; 
  
-}
+} 
 
 static inline unsigned  int optkit_register(void)   
 {
@@ -178,7 +184,6 @@ static inline unsigned  int optkit_register(void)
   size_t refbytes =  0 ; 
   unsigned char *buffer_register=00; 
   
-
   refbytes= optkit_iombufsize(&buffer_register);
   if(!(~0^ refbytes))  
     return  ~0 ; 
@@ -187,9 +192,11 @@ static inline unsigned  int optkit_register(void)
   while(++section_idx  < NSECTIONS) 
     refbytes -=optkit_rat(section_idx,buffer_register,__KEEP_FLOWING);  
 
-  printf("%s \012" , buffer_register) ;
-
-   return refbytes ;  
+  optkit_help=strdup(buffer_register); 
+  
+  free(buffer_register), buffer_register=00; 
+  
+  return refbytes ;  
 }
 
 extern int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
