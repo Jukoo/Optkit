@@ -8,14 +8,15 @@
 #include <errno.h>  
 
 char * optkit_pbn =(char *) 00 ; 
+char * optkit_help =  00;  
+
 optkit_meta_t mopt = {0} ; 
 optkit_xtra_info_t _s , _f; 
-char * optkit_help =  00; 
+optkit_t optk ; 
 
 
 
-
-char * optkit_get_basename(char *const * argv) 
+static char * optkit_set_basename(char *const * argv) 
 {
    int jmp_idx  = 0 ; 
    jmp_idx ^=HAS_RPATH_SYMB(*argv) ; 
@@ -24,35 +25,38 @@ char * optkit_get_basename(char *const * argv)
 } 
 
 
-void optkit_parse(base_optkit_t *restrict options, char * const  *av)   
+int optkit_parse(char * const * av  , base_optkit_t * restrict  options , optkit_parser_routine_cb _user_agrhld_fb,  void * args)  
 {
-  
-  if (!init_memstream_buffer_cookies()) 
+ 
+  if(!init_memstream_buffer_cookies())
   {
-    fprintf(stderr , "fail to initialize memory stream buffer \012") ; 
-    return ; 
+    errno = EOPNOTSUPP; 
+    optkit_err(init_memstream_buffer_cookies) ; 
+    return errno ;  
   }
   
-  optkit_t optk = {
-    ._optkit_base = options , 
-    ._xinfo_flags =0
-  };  
+  optk._optkit_base = options ; 
+  optk._xinfo_flags =0;
+  optk._argv = av ; 
+  int optn = 0 ; 
 
-  optkit_pbn = optkit_get_basename(av) ;
+  optkit_pbn = optkit_set_basename(av) ;
   mopt._max_entries  =  __optkit_get_entries(options) ;
   optkit_looking_extra_info(&optk)  ; 
   mopt._ds_goptl= optkit_extract_option(optk._optkit_base,  &mopt); 
 
   if(!mopt._ds_goptl){
      optkit_err(optkit_extract_option) ; 
-     return ;  
+     return -1 ;  
   }
   optk._optkit_mcollect  = &mopt ; 
   optkit_register()  ; 
 
+  optkit_handler_argument(optn , _user_agrhld_fb , args )  ; 
+
   //!__optkit_clean(mopt) ; 
  
-  return  ; 
+  return 0 ;  
 } 
 
 int optkit_looking_extra_info(struct __optkit_t *  optkit) 
@@ -64,6 +68,7 @@ int optkit_looking_extra_info(struct __optkit_t *  optkit)
     {(void *) &_s , strlen(_s._xinfo)},
     {(void *) &_f , strlen(_f._xinfo)} 
   }; 
+
   unsigned int i  = ~0 ; 
   
   while(++i < 2 ) 
@@ -76,3 +81,28 @@ int optkit_looking_extra_info(struct __optkit_t *  optkit)
   }
   return 0 ; 
 }
+
+int optkit_handler_argument(int opthdl,  optkit_parser_routine_cb  handler, void * args)  
+{
+   unsigned int ac  =~0; 
+   while(*(optk._argv+(++ac))); 
+
+   while(~0!=(opthdl=getopt_long(ac , optk._argv , mopt._shortopts, mopt._ds_goptl, 0 ))) 
+     !handler ? __optkit_default_builtin_arghandler(&opthdl,(void *)00):handler(&opthdl, args) ; 
+
+   return ac ; 
+}
+
+
+void  __optkit_default_builtin_arghandler(int *option_handler ,  void *  __unused_ds)  
+{
+   switch(*option_handler)
+   {
+     case 'h': 
+     default: 
+       fprintf(stderr , "%s", optkit_help) ;  
+       break ; 
+   }
+
+}
+

@@ -186,7 +186,6 @@ size_t optkit_rat(int partition , char *buffer, int bf_check)
   
   if(bf_check) 
     bcheck+=breaded ; 
- 
 
   return breaded;   
 }
