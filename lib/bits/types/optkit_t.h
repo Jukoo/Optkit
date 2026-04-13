@@ -37,10 +37,10 @@ typedef  struct  __optkit_t {
      struct __optkit_extra_info_t * _extrainfo[2] ;
      unsigned char _xinfo_flags; 
    }; 
+   char *const * _argv;  
    union { 
      struct __optkit_meta_t *_optkit_mcollect ; 
-   };  
-  
+   };   
 
 } optkit_t ;  
  

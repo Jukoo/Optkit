@@ -17,11 +17,12 @@
 #include <string.h> 
 
 
-//! just one record is enougth ...   
 extern optkit_meta_t mopt ;  
 extern char * optkit_pbn ;
 extern char * optkit_help; 
 extern optkit_xtra_info_t  _s , _f ; 
+
+typedef  typeof(void (int * , void _Nullable * __restrict__ data)) * optkit_parser_routine_cb ; 
 
 //! Or use strlen  
 #define chrlen(str) __get_amount_nsize(str , 0)  
@@ -199,9 +200,20 @@ static inline unsigned  int optkit_register(void)
   return refbytes ;  
 }
 
-extern int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
-extern char * optkit_get_basename(char *const *  argument_vector) ; 
-extern void optkit_show_usage(void) ; 
-extern void optkit_parse(base_optkit_t * __restrict__ _Nonnull options , char *const *av) ; 
+
+static char * optkit_set_basename(char *const *  argument_vector) ; 
+static int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
+
+
+extern int optkit_handler_argument(int option_handler ,optkit_parser_routine_cb , 
+    void  * _Nullable __restrict__ args) __attribute__((weak));
+
+extern void  __optkit_default_builtin_arghandler(int *option_handler ,
+    void  * _Nullable __restrict__ user_defined_data) __attribute__((weak));  
+
+extern int optkit_parse(char *const * argv , 
+    base_optkit_t * __restrict__ _Nonnull options,
+    optkit_parser_routine_cb _Nullable , void _Nullable * __restrict__ args ) ;   
+
 
 #endif 
