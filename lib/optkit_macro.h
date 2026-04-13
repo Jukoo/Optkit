@@ -39,14 +39,14 @@
   optkit_xtra_info_t _s = {._xinfo = __VA_ARGS__ };\
   base_optkit_t identifier[] = { 
 
-#define noarg(__loption ,  __description) \
-    {{__loption ,0 ,00, __shopt(__loption)}, __description}
+#define noarg(__loption ,  __description, ...) \
+    {{__loption ,0 ,00, __shopt(__loption)}, __description,  ##__VA_ARGS__}
 
-#define  rearg(__loption , __description) \
-    {{__loption ,1 ,00 , __shopt(__loption) }, __description} 
+#define  rearg(__loption , __description, ...) \
+    {{__loption ,1 ,00 , __shopt(__loption) }, __description , ##__VA_ARGS__} 
 
-#define  oparg(__loption , __description) \
-    {{__loption ,2 ,00 , __shopt(__loption)}, __description} 
+#define  oparg(__loption , __description, ...) \
+    {{__loption ,2 ,00 , __shopt(__loption)}, __description,  ##__VA_ARGS__}  
   
 #define  optkit_end  optkitnull }; 
 

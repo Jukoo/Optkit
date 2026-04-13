@@ -24,7 +24,8 @@ static char * optkit_set_basename(char *const * argv)
   return optkit_copy_bn(*argv ,  jmp_idx) ; 
 } 
 
-
+//!TODO  : 
+//int optkit_parse(char  * const * av ,  base_optkit_t *restrict options , ...) ; 
 int optkit_parse(char * const * av  , base_optkit_t * restrict  options , optkit_parser_routine_cb _user_agrhld_fb,  void * args)  
 {
  

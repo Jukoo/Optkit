@@ -28,7 +28,10 @@ struct __optkit_extra_info_t {
 
 typedef struct __base_optkit_t {
    struct option _lopt; 
-   const char *  _description; 
+   const char *  _description;
+   union {
+    unsigned char _sopt_override;
+   }; 
 } base_optkit_t ; 
 
 typedef  struct  __optkit_t { 

@@ -73,15 +73,22 @@ static inline size_t __optkit_get_entries(base_optkit_t * options)
   return (entry<<8|shopt_len);  
 }
 //! build pattern for shortoption  like  :  "xxx:x::"  
-static inline void __optkit_build_sopt(char *  _Nonnull  sopt , const  gopt_t  lopt) 
+static inline void __optkit_build_sopt(char *  _Nonnull  sopt , const  base_optkit_t * opt) 
 { 
   
   static int idx = 0 ; 
-  char *args =00 , *s = 00;  
-  asprintf(&args , "%c?%is", *lopt.name, lopt.has_arg); 
+  char *args =00 , *s = 00,  
+    short_option = opt->_sopt_override;  
+
+  unsigned char  has_arguments = opt->_lopt.has_arg ; 
+
+  if(!short_option)  
+    short_option  = *opt->_lopt.name; 
+
+  asprintf(&args , "%c?%is",  short_option, has_arguments); 
 
   s  = strchr(args  , '?') ;  *s='%'; 
-  sprintf((sopt+idx) ,  args,  (0 < lopt.has_arg ? ":" :"")); 
+  sprintf((sopt+idx) ,  args,  (0 < has_arguments ? ":" :"")); 
 
   s = strchr(sopt , 0x20); 
   if(s) 
@@ -104,15 +111,21 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
   static size_t argument_requested=3,  
                 help_caddr=0, 
                 stat = 0; 
-  char *s = 0 ;  
+  char *s = 0,
+       sopt_val  = option->_sopt_override ;  
 
+  
   if(argument_requested){
     argument_requested^= !(option->_lopt.has_arg^stat) ? option->_lopt.has_arg: stat; 
     if(stat != argument_requested)
       stat = argument_requested ; 
   }
 
-  asprintf(&s ,HLPFMT , option->_lopt.val ,option->_lopt.name, option->_description); 
+
+  if(!sopt_val) 
+    sopt_val = option->_lopt.val ; 
+  
+  asprintf(&s ,HLPFMT ,sopt_val,option->_lopt.name, option->_description); 
   optkit_wat(HELPER_SECTION  , "%s" , s ); 
 
   return argument_requested  ;  
@@ -158,7 +171,7 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
     if(!single_opt->_lopt.name)   
       continue ; 
     
-    __optkit_build_sopt(meta_option->_shortopts, single_opt->_lopt);
+    __optkit_build_sopt(meta_option->_shortopts, single_opt);
 
     /*Determine how the usage should be illustrated */
     argdef =__optkit_record_helper(single_opt) ; 
