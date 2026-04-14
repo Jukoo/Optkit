@@ -24,11 +24,58 @@ static char * optkit_set_basename(char *const * argv)
   return optkit_copy_bn(*argv ,  jmp_idx) ; 
 } 
 
-//!TODO  : 
-//int optkit_parse(char  * const * av ,  base_optkit_t *restrict options , ...) ; 
-int optkit_parse(char * const * av  , base_optkit_t * restrict  options , optkit_parser_routine_cb _user_agrhld_fb,  void * args)  
+static void __optkit_vcheck(unsigned int  noptions,  void * user_feed , va_list ap ) 
 {
- 
+  
+  struct local{ 
+    optkit_parser_routine_cb  _cb_routine; 
+    void * _data ; 
+    union {
+       void * _should_be_unref; 
+    }; 
+  } *user =  (struct  local *) user_feed ;  
+  
+#define  REFCHECK(pdata) \
+  if(pdata == user->_should_be_unref) pdata=(void*)0  
+
+  unsigned int idx=~0; 
+  while((++idx)<noptions){
+    switch(idx)
+    {
+        case 0 : 
+          *(void **) & user->_cb_routine= va_arg(ap , optkit_parser_routine_cb) ;
+          REFCHECK(user->_cb_routine) ; 
+          break ; 
+        case 1 : 
+          user->_data= va_arg(ap, void *) ;  
+          REFCHECK(user->_data) ; 
+          break ; 
+    }
+  }
+
+}
+
+int optkit_parse(char  * const * av ,  base_optkit_t *restrict options , ...) 
+{
+  optkit_parser_routine_cb user_cb_routine = (void  *)0;  
+  void *user_data =  (void *)0 ; 
+  struct { 
+     optkit_parser_routine_cb  _user_cb_routine; 
+     void * _user_data ; 
+     union {
+       void * _should_be_unref; 
+     }; 
+  } feed = {  
+    ._should_be_unref = (void *) options,  
+  } ; 
+
+  unsigned const int noptions=2;  
+  va_list ap ; 
+  va_start(ap,noptions)  ; 
+  __optkit_vcheck(noptions, (void *) &feed, ap);
+  va_end(ap) ; 
+
+
   if(!init_memstream_buffer_cookies())
   {
     errno = EOPNOTSUPP; 
@@ -53,7 +100,7 @@ int optkit_parse(char * const * av  , base_optkit_t * restrict  options , optkit
   optk._optkit_mcollect  = &mopt ; 
   optkit_register()  ; 
 
-  optkit_handler_argument(optn , _user_agrhld_fb , args )  ; 
+  optkit_handler_argument(optn ,feed._user_cb_routine , feed._user_data)  ; 
 
   //!__optkit_clean(mopt) ; 
  

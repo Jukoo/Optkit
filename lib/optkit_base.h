@@ -213,6 +213,7 @@ static inline unsigned  int optkit_register(void)
   return refbytes ;  
 }
 
+static void  __optkit_vcheck(unsigned int  noptions, void *user_feed , va_list ap);
 
 static char * optkit_set_basename(char *const *  argument_vector) ; 
 static int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
@@ -225,8 +226,10 @@ extern void  __optkit_default_builtin_arghandler(int *option_handler ,
     void  * _Nullable __restrict__ user_defined_data) __attribute__((weak));  
 
 extern int optkit_parse(char *const * argv , 
-    base_optkit_t * __restrict__ _Nonnull options,
-    optkit_parser_routine_cb _Nullable , void _Nullable * __restrict__ args ) ;   
+    base_optkit_t * __restrict__ _Nonnull options, 
+    ...); 
+
+  //  optkit_parser_routine_cb _Nullable , void _Nullable * __restrict__ args ) ;   
 
 
 #endif 

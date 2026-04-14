@@ -20,11 +20,24 @@ oparg("input" , "redirect input")  ,
 optkit_ends("The end footer should content the copyright\n\
 ,author and the version of the program") 
 
-int main(int ac , char * const *av) 
+void x(int * i  ,  void * args ) 
 {
   
-  if(optkit_parse(av , options, (void *)00 , (void *)00)) 
-     fprintf(stderr , "%s" , optkit_help) ;
+  switch(*i) 
+  {
+    case 'O': 
+      puts("the big O notation") ; 
+      break ; 
+  }
+
+
+}
+int main(int ac , char * const *av) 
+{
+  int z = 10 ; 
+  
+  if(optkit_parse(av , options ,x))  
+    fprintf(stderr , "%s" , optkit_help) ;
  
   
 
