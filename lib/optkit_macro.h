@@ -27,9 +27,6 @@
     "[ARGS]...",\
 } 
 
-#define optkit_sysnopsys(...) \
-  optkit_write_at(synosys ,  __VA_ARGS__)
-
 
 #define  optkitnull {{00 ,0 ,00,0}, 00}  
 #define  __shopt(__loption) (__loption[0] & 0xff)  
@@ -53,17 +50,6 @@
 #define optkit_ends(...) \
     optkitnull };\
     optkit_xtra_info_t _f = {._xinfo = __VA_ARGS__}; 
-
-static inline const char * fva_args(const  char * fmt, ...) 
-{
-  va_list ap ; 
-  va_start(ap,fmt) ; 
-  char *s  = 0 ; 
-  vasprintf(&s, fmt , ap) ;   
-
-  va_end(ap);  
-  return s ; 
-}
 
 
 #endif//_M_optkit

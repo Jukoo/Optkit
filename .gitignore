@@ -4,7 +4,6 @@ example/bin/*
 example/build/*
 TODO.md 
 config.status config.log
-Makefile  
 autom4te.cache/
 aclocal.m4
 compile 

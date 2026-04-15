@@ -59,10 +59,7 @@ union  {
   } ; 
 };   
 
-/*
- * Internal  memory  buffer  cookies structure 
- * used to  manipulation the memory buffer 
- * */
+/*Internal  memory  buffer  cookies structure */
 struct __membuff_cookies_t {  
   char *   _sbuff ;  
   void *   _ebuff ;  
@@ -156,11 +153,11 @@ __get_partition_location_address(struct __optkit_memsb_t * new_ctxc, int io_mode
   
   memcpy(&ioloc->_chunck_part , &secpart ,   sizeof(struct __section_t)) ; 
 
-  //!NOTE: Checking overflow ...
+  /*WARNING: Checking overflow ...*/ 
   if(ioloc->_io_location_address > new_ctxc->_msbio_cookies->_ebuff)
   {
     free(ioloc) ,  ioloc = 00 ;  
-    return (void* ) -10  ; // overflow code  
+    return (void* ) -10; 
   }
 
   return ioloc ;  
@@ -224,9 +221,9 @@ iomem_write(void * ctx_cookies , const char * buff , size_t wbytesize) ;
 ssize_t  
 iomem_read(void * ctx_cookies , char * buff  , size_t rbytesize) ;  
 
-
-int /*TODO : implement iomem_close */ 
+int  
 iomem_close(void * ctx_cookies) ; 
+
 
 /*Generic  context used for updating  */
 static struct __optkit_memsb_t  *  
@@ -248,6 +245,7 @@ optkit_iombufpush(const char * _Nonnull  regbuf);
 size_t 
 optkit_iomsbufclean(void) ; 
 
+int optkit_iombufdestroy(void);   
 size_t optkit_iombufsave(char **sbptr) ; 
 
 
