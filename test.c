@@ -1,9 +1,6 @@
 //SPDX-License-Identifier: GPL-3.0 
 //!--This is a test file --- 
 
-/* TODO: 
- * []  - add builtin argparse  that handle only the helper ... 
- */ 
 #include <stdio.h> 
 #include "optkit.h" 
 
@@ -23,10 +20,17 @@ optkit_ends("The end footer should content the copyright\n\
 void x(int * i  ,  void * args ) 
 {
   
+  if(args) 
+  {
+     puts("has something inside") ; 
+  }
   switch(*i) 
   {
     case 'O': 
       puts("the big O notation") ; 
+      break ;
+    default:
+      printf("%s" , optkit_help) ; 
       break ; 
   }
 
@@ -36,7 +40,7 @@ int main(int ac , char * const *av)
 {
   int z = 10 ; 
   
-  if(optkit_parse(av , options ,x))  
+  if(optkit_parse(av , options ,x ,  (void *) &z))  
     fprintf(stderr , "%s" , optkit_help) ;
  
   

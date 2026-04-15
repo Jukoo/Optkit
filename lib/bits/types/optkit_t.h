@@ -18,11 +18,9 @@
 #endif 
 
 
-typedef typeof(const char * (const char *fmt , ...)) *fxtract  ; 
 
 typedef  struct __optkit_extra_info_t  optkit_xtra_info_t; 
 struct __optkit_extra_info_t { 
-  fxtract _f ;  //NOTE  : not used  yet  !  
   char * _xinfo ;  
 } ; 
 

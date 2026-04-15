@@ -54,7 +54,6 @@ static void __optkit_vcheck(unsigned int  noptions,  void * user_feed , va_list 
   }
 
 }
-
 int optkit_parse(char  * const * av ,  base_optkit_t *restrict options , ...) 
 {
   optkit_parser_routine_cb user_cb_routine = (void  *)0;  
@@ -99,11 +98,10 @@ int optkit_parse(char  * const * av ,  base_optkit_t *restrict options , ...)
   }
   optk._optkit_mcollect  = &mopt ; 
   optkit_register()  ; 
-
   optkit_handler_argument(optn ,feed._user_cb_routine , feed._user_data)  ; 
 
-  //!__optkit_clean(mopt) ; 
- 
+  optkit_clean(&optk) ; 
+
   return 0 ;  
 } 
 
@@ -154,3 +152,24 @@ void  __optkit_default_builtin_arghandler(int *option_handler ,  void *  __unuse
 
 }
 
+static int  optkit_clean(struct  __optkit_t * _Nonnull restrict   optkit) 
+{
+  gopt_t * getopt_options = optkit->_optkit_mcollect->_ds_goptl ; 
+  char * shortoptions= optkit->_optkit_mcollect->_shortopts ; 
+  if (getopt_options) 
+    free(getopt_options), getopt_options=00 ; 
+  
+  if(shortoptions) 
+    free(shortoptions), shortoptions=00; 
+
+  optkit_close_cookie_stream_buffer(); 
+  return 0;  
+}
+
+void  optkit_release_extern_object(void) 
+{
+   free(optkit_pbn), optkit_pbn=00; 
+   free(optkit_help), optkit_help=00; 
+  
+   puts("free"); 
+}

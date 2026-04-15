@@ -55,7 +55,6 @@ static inline  char * optkit_copy_bn(const char * basename ,  int index)
     bytes_copy-=index-1;
   }
 
-  //!TODO::NOTE: release optkit_pbn  ; 
   return memcpy(optkit_pbn ,(basename+index), bytes_copy); 
 }
 
@@ -206,14 +205,22 @@ static inline unsigned  int optkit_register(void)
   while(++section_idx  < NSECTIONS) 
     refbytes -=optkit_rat(section_idx,buffer_register,__KEEP_FLOWING);  
 
-  optkit_help=strdup(buffer_register); 
+  optkit_help=strndup(buffer_register, strlen(buffer_register)); 
   
   free(buffer_register), buffer_register=00; 
   
   return refbytes ;  
 }
+static inline int  optkit_close_cookie_stream_buffer(void) 
+{
+    return optkit_iombufdestroy()  ; 
+}
 
-static void  __optkit_vcheck(unsigned int  noptions, void *user_feed , va_list ap);
+
+static int optkit_clean(struct  __optkit_t * _Nonnull restrict   optkit);  
+
+static void __optkit_vcheck(unsigned int  noptions, void *user_feed , va_list ap);
+
 
 static char * optkit_set_basename(char *const *  argument_vector) ; 
 static int optkit_looking_extra_info(struct  __optkit_t * _Nonnull optkit) ; 
@@ -227,9 +234,8 @@ extern void  __optkit_default_builtin_arghandler(int *option_handler ,
 
 extern int optkit_parse(char *const * argv , 
     base_optkit_t * __restrict__ _Nonnull options, 
-    ...); 
+    ...);   
 
-  //  optkit_parser_routine_cb _Nullable , void _Nullable * __restrict__ args ) ;   
-
+extern void  optkit_release_extern_object(void) __attribute__((destructor)) ; 
 
 #endif 
