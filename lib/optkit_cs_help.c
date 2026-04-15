@@ -193,7 +193,8 @@ size_t  optkit_wat(int  partition ,  const char * fmt  , ...)
    va_end(ap) ;  
   
    bwriten = fwrite(s,1,strlen(s),optkit_stream) ; 
-  
+
+   free(s); s =0 ; 
    return bwriten ; 
 }
 

@@ -126,7 +126,8 @@ static inline size_t __optkit_record_helper(base_optkit_t * option)
   
   asprintf(&s ,HLPFMT ,sopt_val,option->_lopt.name, option->_description); 
   optkit_wat(HELPER_SECTION  , "%s" , s ); 
-
+  
+  free(s) , s =00 ; 
   return argument_requested  ;  
 }
 
@@ -178,9 +179,10 @@ static inline gopt_t  * optkit_extract_option(base_optkit_t*  options ,
 
   __optkit_breffing_usage(argdef) ; 
   assert(!strlen(meta_option->_shortopts) ^shopt_size); 
-
+  
   return super_opt ;  
-} 
+}
+
 static inline int optkit_record_extra_info(const char *  xinfo , unsigned int  type)
 {
   if(1 & type)

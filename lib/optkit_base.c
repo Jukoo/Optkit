@@ -154,13 +154,13 @@ void  __optkit_default_builtin_arghandler(int *option_handler ,  void *  __unuse
 
 static int  optkit_clean(struct  __optkit_t * _Nonnull restrict   optkit) 
 {
-  gopt_t * getopt_options = optkit->_optkit_mcollect->_ds_goptl ; 
-  char * shortoptions= optkit->_optkit_mcollect->_shortopts ; 
+  gopt_t * getopt_options = optkit->_optkit_mcollect->_ds_goptl ;  
+  char *sopt = optkit->_optkit_mcollect->_shortopts; 
   if (getopt_options) 
     free(getopt_options), getopt_options=00 ; 
+  if(sopt) 
+    free(sopt),sopt=00 ; 
   
-  if(shortoptions) 
-    free(shortoptions), shortoptions=00; 
 
   optkit_close_cookie_stream_buffer(); 
   return 0;  
