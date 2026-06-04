@@ -1,4 +1,6 @@
-### Optkit
+<img src="assets/img/logo/optkit-logo.png" width="132"  height="" alt="optkit-logo" style="margin-right:20px;border-radius:35px"  align="left"/>
+<br>
+
 **Optkit** est une bibliothèque C déclarative, légère et orientée événements pour le parsing d'options en ligne de commande, construite au-dessus de getopt.
 
 Contrairement aux approches traditionnelles qui imposent de longs blocs de structures rigides et une maintenance manuelle fastidieuse, Optkit utilise une syntaxe fluide basée sur des macros pour définir vos options (un DSL en C) et délègue le traitement à une fonction de rappel (callback) hautement configurable.
