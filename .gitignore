@@ -21,3 +21,4 @@ build/
 config.log 
 tags 
 *.dbg
+.libs
