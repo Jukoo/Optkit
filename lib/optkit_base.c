@@ -1,6 +1,9 @@
 /*SPDX-License-Identifier: GPL-3.0 */ 
 
-
+/* 
+ * Optkit  exposed implementation 
+ * Copyright(c) 2026, Umar Ba <jUmarB@protonmail.com> 
+ */
 #define _GNU_SOURCE  
 #include "optkit_base.h" 
 #include <stdio.h> 
@@ -170,6 +173,4 @@ void  optkit_release_extern_object(void)
 {
    free(optkit_pbn), optkit_pbn=00; 
    free(optkit_help), optkit_help=00; 
-  
-   puts("free"); 
 }

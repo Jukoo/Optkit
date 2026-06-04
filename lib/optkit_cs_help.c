@@ -1,4 +1,8 @@
 //!SPDX-License-Identifier:GPL-3.0 
+/*
+ *
+ * Copyright(c) 2026, Umar Ba <jUmarB@protonmail.com> 
+ */
 
 #include <assert.h> 
 #include <errno.h> 
@@ -7,8 +11,9 @@
 #include "optkit_macro.h"
 #include "optkit_cs_help.h"  
 
-//!NOTE::Warning: THIS ! is a shared resources between ios stream operation  
-//!     : on memery buffer.
+/* !NOTE::Warning: Shared resources between ios stream operation  
+ * on memery buffer.
+ */ 
 
 FILE * optkit_stream = 00; 
 
@@ -33,7 +38,9 @@ cookie_io_functions_t  hooks = {
   }; 
 
 
-//init_memstream_buffer_cookies(int user_lock_permission) 
+/* TODO: for next release for memory buffer page proctection; 
+ * init_memstream_buffer_cookies(int user_lock_permission) 
+ */ 
 struct __optkit_memsb_t * 
 init_memstream_buffer_cookies(void) 
 {

@@ -1,5 +1,9 @@
 /*SPDX-License-Identifier: GPL-3.0 */ 
 
+/*
+ * Optkit Type definitions 
+ * Copyright(c) 2026, Umar Ba <jUmarB@protonmail.com> 
+ */
 #if !defined(_SYS_TYPES_OPTKIT_T_H) 
 #define _SYS_TYPES_OPTKIT_T_H  1 
 
@@ -16,7 +20,6 @@
 # define _Nonnull
 # define _Nullable 
 #endif 
-
 
 
 typedef  struct __optkit_extra_info_t  optkit_xtra_info_t; 

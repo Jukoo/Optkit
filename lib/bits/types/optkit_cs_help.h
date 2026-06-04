@@ -3,6 +3,7 @@
  * - Optkit helper cookiestream  
  *   A Custum memory stream io 
  *   for helper or usage . 
+ * Copyright(c) 2026 , Umar Ba <jUmarB@protonmail.com> 
  */
 
 #if !defined(_SYS_TYPE_OPTKIT_CS_HLP)  

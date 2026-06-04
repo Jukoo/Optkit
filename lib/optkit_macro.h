@@ -1,4 +1,8 @@
 //!SPDX-License-Identifier: GPL-3.0 
+/* 
+ * Shortcut Macros definition 
+ * Copyright(c) 2026, Umar Ba <jUmarB@protonmail.com> 
+ */ 
 
 #if !defined(_M_optkit) 
 #define  _M_optkit 

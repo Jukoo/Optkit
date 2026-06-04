@@ -1,10 +1,12 @@
 //SPDX-License-Identifier: GPL-3.0 
-//!--This is a test file --- 
+/*--This is a test file And you can refer to this as example ---  
+ *  This file  answer the Question how to use it ?? 
+ * Copyright(c) 2026 , Umar Ba <jUmarB@protonmail.com> 
+ */ 
 
 #include <stdio.h> 
 #include "optkit.h" 
 
-//extern char * optkit_pbn ;
 extern char * optkit_help; 
 
 optkit_begin(options, "This program is  a test\n\
@@ -17,18 +19,22 @@ oparg("input" , "redirect input")  ,
 optkit_ends("The end footer should content the copyright\n\
 ,author and the version of the program") 
 
-void x(int * i  ,  void * args ) 
+void argument_handler(int * option ,  void *  your_extra_data) 
 {
   
-  if(args) 
+  if(your_extra_data)  
   {
      puts("has something inside") ; 
   }
-  switch(*i) 
+
+  switch(*option) 
   {
     case 'O': 
       puts("the big O notation") ; 
-      break ;
+      break ; 
+    case 'i':  
+      printf("Input  data   %s \n" ,  optarg) ; 
+      break; 
     default:
       printf("%s" , optkit_help) ; 
       break ; 
@@ -38,9 +44,9 @@ void x(int * i  ,  void * args )
 }
 int main(int ac , char * const *av) 
 {
-  int z = 10 ; 
+  int  your_extra_data= 10 ; 
   
-  if(optkit_parse(av , options ,x ,  (void *) &z))  
+  if(optkit_parse(av , options , argument_handler,  (void *) &your_extra_data))  
     fprintf(stderr , "%s" , optkit_help) ;
  
   
