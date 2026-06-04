@@ -21,7 +21,7 @@ La gestion des flux d'I/O et de l'aide textuelle s'appuie sur des hooks système
 Comment ça marche ? (Explication de l'exemple)
 Voici l'analyse détaillée du fonctionnement d'Optkit basé sur le fichier d'exemple fourni :
 
-```source :  [test.c](test.c)```
+_[test.c](./test.c)_
 ```C
 //SPDX-License-Identifier: GPL-3.0 
 #include <stdio.h> 
