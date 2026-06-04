@@ -136,7 +136,7 @@ Pour lancer la compilation :
 _*Note : Comme fopencookie est une extension GNU spécifique à la glibc, le fichier meson.build configure automatiquement les drapeaux de compilation nécessaires ```(-D_GNU_SOURCE ou std type gnu11)```._
 
 
-##### Utilisation dans un projet externe
+###### Utilisation dans un projet externe
 Après une compilation réussie, les artefacts prêts à l'emploi sont centralisés et disponibles dans le dossier ```build/lib/``` :
 
 ```Bibliothèque Statique (.a)``` : Idéale pour embarquer directement Optkit dans votre binaire final sans dépendance externe au runtime.
@@ -148,6 +148,42 @@ Pour lier Optkit à votre propre projet en ligne de commande :
 ```Bash
 # Exemple de linkage statique manuel avec gcc
 gcc -D_GNU_SOURCE main.c -L./build/lib -loptkit -o votre_programme
+```
+
+###### Option 2 : Compilation avec GNU Autotools
+Pour les environnements de cross-compilation classiques ou les systèmes plus anciens ou restrein (comme Yocto, Buildroot, etc.), Optkit supporte également le système de build traditionnel Autotools (autoconf, automake).
+
+Pour initialiser l'infrastructure et compiler le projet, exécutez les commandes suivantes :
+
+```Bash
+# 1. Générer le script ./configure (requis la première fois) 
+
+autoreconf --install
+```
+###### 2. Configurer le projet et détecte automatiquement fopencookie et _GNU_SOURCE 
+
+```bash 
+./configure
+``` 
+###### 3. Compiler la bibliothèque et l'exemple
+
+```bash 
+make
+```
+###### Emplacement des artefacts Autotools
+
+Une fois la compilation terminée via make, Autotools s'appuie sur libtool pour isoler les fichiers. Vous les trouverez dans le répertoire masqué .libs/ :
+
+Bibliothèque Statique : ```.libs/liboptkit.a```
+
+Bibliothèque Partagée : ```.libs/liboptkit.so```
+
+Exécutable d'exemple : ```./optkit_example (situé à la racine)```
+
+Pour installer proprement la bibliothèque et ses en-têtes sur votre système :
+
+```Bash
+sudo make install
 ```
 
 
