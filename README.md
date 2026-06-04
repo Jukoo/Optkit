@@ -122,15 +122,33 @@ Testabilité unitaire : Vous pouvez simuler des entrées et capturer l'aide gén
 
 ### Intégration & Compilation
 
-Le projet utilise le système de build moderne Meson. Pour compiler la bibliothèque et l'exemple fournis, exécutez simplement les commandes suivantes :
+Le projet s'appuie sur le système de build ```Meson```. Lors de la compilation, Optkit génère automatiquement les deux variantes de la bibliothèque (statique et partagée) pour s'adapter à tous les types d'intégration.
+
+Pour lancer la compilation :
 
 ######  1. Configurer le répertoire de build
 
 ```meson setup build```
-######  2. Compiler le projet
-```meson compile -C build```
 
-Note : Comme fopencookie est une extension GNU spécifique à la glibc, le fichier meson.build configure automatiquement les drapeaux de compilation nécessaires (-D_GNU_SOURCE ou std type gnu11).
+######  2. Compiler le projet
+```meson compile -C build``` 
+
+_*Note : Comme fopencookie est une extension GNU spécifique à la glibc, le fichier meson.build configure automatiquement les drapeaux de compilation nécessaires ```(-D_GNU_SOURCE ou std type gnu11)```._
+
+
+##### Utilisation dans un projet externe
+Après une compilation réussie, les artefacts prêts à l'emploi sont centralisés et disponibles dans le dossier ```build/lib/``` :
+
+```Bibliothèque Statique (.a)``` : Idéale pour embarquer directement Optkit dans votre binaire final sans dépendance externe au runtime.
+
+```Bibliothèque Partagée (.so) ```: Parfaite pour un linkage dynamique standard.
+
+Pour lier Optkit à votre propre projet en ligne de commande :
+
+```Bash
+# Exemple de linkage statique manuel avec gcc
+gcc -D_GNU_SOURCE main.c -L./build/lib -loptkit -o votre_programme
+```
 
 
 #### Licence
