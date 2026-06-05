@@ -38,3 +38,4 @@ optkit_example*
 libtool 
 optkit_base.lo 
 optkit_cs_help.lo 
+Makefile
